@@ -1,9 +1,5 @@
-import * as tf from '@tensorflow/tfjs';
-import * as qna from '@tensorflow-models/qna';
-import * as toxicity from '@tensorflow-models/toxicity';
-
 let toxicityModel;
-toxicity.load().then(model => {
+toxicity.load().then((model) => {
   toxicityModel = model;
 });
 
@@ -26,7 +22,7 @@ document.getElementById('register-form').addEventListener('submit', async functi
   const response = await fetch('/api/user/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password })
+    body: JSON.stringify({ username, password }),
   });
 
   const data = await response.json();
@@ -48,7 +44,7 @@ document.getElementById('login-form').addEventListener('submit', async function 
   const response = await fetch('/api/user/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password })
+    body: JSON.stringify({ username, password }),
   });
 
   const data = await response.json();
@@ -66,7 +62,7 @@ document.getElementById('form').addEventListener('submit', async function (e) {
   const input = document.getElementById('input');
   if (input.value) {
     const predictions = await toxicityModel.classify([input.value]);
-    const toxic = predictions.some(prediction => prediction.results[0].match);
+    const toxic = predictions.some((prediction) => prediction.results[0].match);
 
     if (toxic) {
       socket.emit('chat message', 'Please refrain from using offensive language.');
