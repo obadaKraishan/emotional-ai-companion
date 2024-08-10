@@ -1,0 +1,31 @@
+.chat-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    height: 400px;
+    overflow-y: scroll;
+    margin-bottom: 20px;
+  }
+  
+  #messages {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  #form {
+    display: flex;
+  }
+  
+  #input {
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+  }
+  
