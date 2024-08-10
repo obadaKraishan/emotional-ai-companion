@@ -40,17 +40,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 
 const authMiddleware = (req, res, next) => {
-  const token = req.header('Authorization')?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+    const token = req.header('Authorization')?.split(' ')[1];
+    console.log('Token received:', token);
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    res.status(401).json({ error: 'Unauthorized' });
-  }
-};
+    if (!token) {
+        console.log('No token provided.');
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (err) {
+        console.log('Token verification failed:', err.message);
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+};  
 
 app.use('/api/user', userRoutes);
 app.use('/api/chat', authMiddleware, chatRoutes);

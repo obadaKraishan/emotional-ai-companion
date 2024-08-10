@@ -14,17 +14,25 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  try {
-    const newMessage = new Message(req.body);
-    await newMessage.save();
-
-    const sentiment = await analyzeSentiment(newMessage.text); // Analyze sentiment
-    const response = generateResponse(newMessage.text, sentiment); // Generate response based on sentiment
-    res.status(201).json({ message: newMessage, response });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+    try {
+      console.log('Received message:', req.body.text); // Debugging
+  
+      const newMessage = new Message(req.body);
+      await newMessage.save();
+  
+      const sentiment = await analyzeSentiment(newMessage.text); // Analyze sentiment
+      console.log('Sentiment analysis result:', sentiment); // Debugging
+  
+      const response = generateResponse(newMessage.text, sentiment); // Generate response based on sentiment
+      console.log('Generated response:', response); // Debugging
+  
+      res.status(201).json({ message: newMessage, response });
+    } catch (err) {
+      console.error('Error handling message:', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+  
 
 function generateResponse(userMessage, sentiment) {
   if (sentiment === 'negative') {

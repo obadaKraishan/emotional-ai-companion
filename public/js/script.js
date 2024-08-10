@@ -37,41 +37,76 @@ document.getElementById('register-form').addEventListener('submit', async functi
 
 // Login User
 document.getElementById('login-form').addEventListener('submit', async function (e) {
-  e.preventDefault();
-  const username = document.getElementById('login-username').value;
-  const password = document.getElementById('login-password').value;
-
-  const response = await fetch('/api/user/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password }),
+    e.preventDefault();
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+  
+    const response = await fetch('/api/user/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+  
+    const data = await response.json();
+    if (response.ok) {
+      localStorage.setItem('authToken', data.token);
+      window.location.href = '/';
+    } else {
+      showFeedback(`Login failed: ${data.error}`, false);
+    }
   });
-
-  const data = await response.json();
-  if (response.ok) {
-    localStorage.setItem('authToken', data.token);
-    window.location.href = '/';
-  } else {
-    showFeedback(`Login failed: ${data.error}`, false);
-  }
-});
-
+  
 // Handle Chat Submission
 document.getElementById('form').addEventListener('submit', async function (e) {
-  e.preventDefault();
-  const input = document.getElementById('input');
-  if (input.value) {
-    const predictions = await toxicityModel.classify([input.value]);
-    const toxic = predictions.some((prediction) => prediction.results[0].match);
-
-    if (toxic) {
-      socket.emit('chat message', 'Please refrain from using offensive language.');
-    } else {
-      socket.emit('chat message', input.value);
+    e.preventDefault();
+    const input = document.getElementById('input');
+    const authToken = localStorage.getItem('authToken');
+  
+    if (!authToken) {
+      alert("You are not logged in. Redirecting to login page.");
+      window.location.href = '/';
+      return;
     }
-    input.value = '';
-  }
-});
+  
+    if (input.value) {
+      const predictions = await toxicityModel.classify([input.value]);
+      const toxic = predictions.some((prediction) => prediction.results[0].match);
+  
+      // Send the message to the server
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}` // Include the token in the Authorization header
+        },
+        body: JSON.stringify({ text: input.value }),
+      });
+  
+      if (response.status === 401) {
+        alert("Session expired or unauthorized. Please log in again.");
+        localStorage.removeItem('authToken');
+        window.location.href = '/';
+        return;
+      }
+  
+      const responseData = await response.json();
+  
+      // Display the user's message
+      const userItem = document.createElement('li');
+      userItem.textContent = `You: ${input.value}`;
+      document.getElementById('messages').appendChild(userItem);
+  
+      // Display the AI's response
+      const aiItem = document.createElement('li');
+      aiItem.textContent = `AI: ${responseData.response}`;
+      document.getElementById('messages').appendChild(aiItem);
+  
+      speak(responseData.response); // Use text-to-speech for AI's response
+      window.scrollTo(0, document.body.scrollHeight); // Scroll to the bottom of the chat
+  
+      input.value = ''; // Clear the input field
+    }
+  });    
 
 function speak(text) {
   const synth = window.speechSynthesis;
