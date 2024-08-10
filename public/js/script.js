@@ -5,6 +5,15 @@ toxicity.load().then(model => {
 
 const socket = io();
 
+document.addEventListener('DOMContentLoaded', function () {
+  // Check if user is already logged in
+  const authToken = localStorage.getItem('authToken');
+  if (authToken) {
+    document.getElementById('auth-section').style.display = 'none';
+    document.getElementById('chat-section').style.display = 'block';
+  }
+});
+
 // Register User
 document.getElementById('register-form').addEventListener('submit', async function (e) {
   e.preventDefault();
@@ -20,6 +29,8 @@ document.getElementById('register-form').addEventListener('submit', async functi
   const data = await response.json();
   if (response.ok) {
     showFeedback('Registration successful', true);
+    localStorage.setItem('authToken', data.token);
+    window.location.href = '/';
   } else {
     showFeedback(`Registration failed: ${data.error}`, false);
   }
@@ -40,9 +51,7 @@ document.getElementById('login-form').addEventListener('submit', async function 
   const data = await response.json();
   if (response.ok) {
     localStorage.setItem('authToken', data.token);
-    document.getElementById('auth-section').style.display = 'none';
-    document.getElementById('chat-section').style.display = 'block';
-    showFeedback('Login successful', true);
+    window.location.href = '/';
   } else {
     showFeedback(`Login failed: ${data.error}`, false);
   }
