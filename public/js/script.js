@@ -1,3 +1,7 @@
+import * as tf from '@tensorflow/tfjs';
+import * as qna from '@tensorflow-models/qna';
+import * as toxicity from '@tensorflow-models/toxicity';
+
 let toxicityModel;
 toxicity.load().then(model => {
   toxicityModel = model;
@@ -6,7 +10,6 @@ toxicity.load().then(model => {
 const socket = io();
 
 document.addEventListener('DOMContentLoaded', function () {
-  // Check if user is already logged in
   const authToken = localStorage.getItem('authToken');
   if (authToken) {
     document.getElementById('auth-section').style.display = 'none';
@@ -57,6 +60,7 @@ document.getElementById('login-form').addEventListener('submit', async function 
   }
 });
 
+// Handle Chat Submission
 document.getElementById('form').addEventListener('submit', async function (e) {
   e.preventDefault();
   const input = document.getElementById('input');
