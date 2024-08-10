@@ -4,8 +4,15 @@ import http from 'http';
 import { Server } from 'socket.io';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import { fileURLToPath } from 'url';
+
+import chatRoutes from './routes/chat.js'; // Import the chat routes
 
 dotenv.config();
+
+// Define __filename and __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const server = http.createServer(app);
@@ -28,7 +35,7 @@ app.get('/', (req, res) => {
   res.render('chat');
 });
 
-app.use('/api/chat', require('./routes/chat'));
+app.use('/api/chat', chatRoutes); // Use the imported chat routes
 
 // Socket.io for real-time interaction
 io.on('connection', (socket) => {
