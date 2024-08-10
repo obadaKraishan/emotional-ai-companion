@@ -1,7 +1,7 @@
-import express from 'express';
-import Message from '../models/Message.js';
-import { analyzeSentiment } from '../services/sentiment.js';
-import { generateResponse } from '../services/ai.js'; // Import the AI response generator
+const express = require('express');
+const Message = require('../models/Message.js');
+const { analyzeSentiment } = require('../services/sentiment.js');
+const { generateResponse } = require('../services/ai.js'); // Import the AI response generator
 
 const router = express.Router();
 
@@ -34,4 +34,4 @@ router.post('/', async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;

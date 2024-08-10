@@ -25,7 +25,6 @@ mongoose.connect(process.env.MONGODB_URI, {
   useUnifiedTopology: true,
 });
 
-// MongoDB connection event handling
 mongoose.connection.on('connected', () => {
   console.log('Connected to MongoDB successfully');
 });
@@ -56,7 +55,7 @@ const authMiddleware = (req, res, next) => {
         console.log('Token verification failed:', err.message);
         return res.status(401).json({ error: 'Unauthorized' });
     }
-};  
+};
 
 app.use('/api/user', userRoutes);
 app.use('/api/chat', authMiddleware, chatRoutes);
