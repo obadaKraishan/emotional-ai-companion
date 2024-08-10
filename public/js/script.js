@@ -1,7 +1,3 @@
-import * as tf from '@tensorflow/tfjs';
-import * as qna from '@tensorflow-models/qna';
-import * as toxicity from '@tensorflow-models/toxicity';
-
 let toxicityModel;
 toxicity.load().then(model => {
   toxicityModel = model;
@@ -23,9 +19,9 @@ document.getElementById('register-form').addEventListener('submit', async functi
 
   const data = await response.json();
   if (response.ok) {
-    alert('Registration successful');
+    showFeedback('Registration successful', true);
   } else {
-    alert(`Registration failed: ${data.error}`);
+    showFeedback(`Registration failed: ${data.error}`, false);
   }
 });
 
@@ -46,8 +42,9 @@ document.getElementById('login-form').addEventListener('submit', async function 
     localStorage.setItem('authToken', data.token);
     document.getElementById('auth-section').style.display = 'none';
     document.getElementById('chat-section').style.display = 'block';
+    showFeedback('Login successful', true);
   } else {
-    alert(`Login failed: ${data.error}`);
+    showFeedback(`Login failed: ${data.error}`, false);
   }
 });
 
@@ -80,3 +77,10 @@ socket.on('chat message', function (msg) {
   speak(msg);
   window.scrollTo(0, document.body.scrollHeight);
 });
+
+function showFeedback(message, success) {
+  const modalBody = document.getElementById('feedbackModalBody');
+  modalBody.textContent = message;
+  const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+  modal.show();
+}
