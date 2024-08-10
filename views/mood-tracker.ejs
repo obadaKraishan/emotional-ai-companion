@@ -1,0 +1,24 @@
+<h1>Mood Tracker</h1>
+<canvas id="moodChart"></canvas>
+<script>
+  const ctx = document.getElementById('moodChart').getContext('2d');
+  const moodChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4'],
+      datasets: [{
+        label: 'Mood',
+        data: [3, 2, 4, 5], // Example data
+        borderColor: 'rgba(75, 192, 192, 1)',
+        fill: false,
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>

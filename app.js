@@ -5,8 +5,10 @@ import { Server } from 'socket.io';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import { fileURLToPath } from 'url';
+import jwt from 'jsonwebtoken';
 
 import chatRoutes from './routes/chat.js'; // Import the chat routes
+import userRoutes from './routes/user.js'; // Import the user routes
 
 dotenv.config();
 
@@ -30,12 +32,27 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 
+// JWT Middleware to protect routes
+const authMiddleware = (req, res, next) => {
+  const token = req.header('Authorization')?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    res.status(401).json({ error: 'Unauthorized' });
+  }
+};
+
 // Routes
+app.use('/api/user', userRoutes); // User routes
+app.use('/api/chat', authMiddleware, chatRoutes); // Chat routes protected by JWT
+
 app.get('/', (req, res) => {
   res.render('chat');
 });
-
-app.use('/api/chat', chatRoutes); // Use the imported chat routes
 
 // Socket.io for real-time interaction
 io.on('connection', (socket) => {
