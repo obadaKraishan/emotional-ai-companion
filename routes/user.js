@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import User from '../models/user.js';
+import User from '../models/User.js';
 
 const router = express.Router();
 
@@ -24,8 +24,7 @@ router.post('/register', async (req, res) => {
     await newUser.save();
     res.status(201).json({ message: 'User registered successfully' });
   } catch (err) {
-    console.error('Registration error:', err);  // Log the error to the server console
-    res.status(500).json({ error: 'Server error during registration' });
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -39,6 +38,11 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
+    // Debugging: Log the retrieved user and passwords
+    console.log('User found:', user);
+    console.log('Password to compare:', password);
+    console.log('Hashed password:', user.password);
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ error: 'Invalid credentials' });
@@ -47,8 +51,8 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ token });
   } catch (err) {
-    console.error('Login error:', err);  // Log the error to the server console
-    res.status(500).json({ error: 'Server error during login' });
+    console.error('Login error:', err); // Log the error to get more details
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -58,8 +62,7 @@ router.get('/profile', async (req, res) => {
     const user = await User.findById(req.user.userId).select('-password');
     res.json(user);
   } catch (err) {
-    console.error('Profile error:', err);  // Log the error to the server console
-    res.status(500).json({ error: 'Server error while fetching profile' });
+    res.status(500).json({ error: err.message });
   }
 });
 

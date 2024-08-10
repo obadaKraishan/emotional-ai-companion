@@ -19,9 +19,19 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+// Database connection
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+});
+
+// MongoDB connection event handling
+mongoose.connection.on('connected', () => {
+  console.log('Connected to MongoDB successfully');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('Error connecting to MongoDB:', err);
 });
 
 app.use(express.json());
