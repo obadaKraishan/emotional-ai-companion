@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 import { fileURLToPath } from 'url';
 import jwt from 'jsonwebtoken';
 
-import chatRoutes from './routes/chat.js';
+import chatRoutes from './routes/chat.js'; // This must match the export style in 'chat.js'
 import userRoutes from './routes/user.js';
 
 dotenv.config();
@@ -55,7 +55,7 @@ const authMiddleware = (req, res, next) => {
         console.log('Token verification failed:', err.message);
         return res.status(401).json({ error: 'Unauthorized' });
     }
-};
+};  
 
 app.use('/api/user', userRoutes);
 app.use('/api/chat', authMiddleware, chatRoutes);

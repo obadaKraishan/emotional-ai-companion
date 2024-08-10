@@ -1,7 +1,7 @@
-const express = require('express');
-const Message = require('../models/Message.js');
-const { analyzeSentiment } = require('../services/sentiment.js');
-const { generateResponse } = require('../services/ai.js'); // Import the AI response generator
+import express from 'express';
+import Message from '../models/Message.js';
+import { analyzeSentiment } from '../services/sentiment.js';
+import { generateResponse } from '../services/ai.js';
 
 const router = express.Router();
 
@@ -16,16 +16,16 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    console.log('Received message:', req.body.text); // Debugging
+    console.log('Received message:', req.body.text);
 
     const newMessage = new Message(req.body);
     await newMessage.save();
 
-    const sentiment = await analyzeSentiment(newMessage.text); // Analyze sentiment
-    console.log('Sentiment analysis result:', sentiment); // Debugging
+    const sentiment = await analyzeSentiment(newMessage.text);
+    console.log('Sentiment analysis result:', sentiment);
 
-    const response = await generateResponse(newMessage.text, sentiment); // Await AI-generated response
-    console.log('Generated response:', response); // Debugging
+    const response = await generateResponse(newMessage.text); // Adjusted to match new function signature
+    console.log('Generated response:', response);
 
     res.status(201).json({ message: newMessage, response });
   } catch (err) {
@@ -34,4 +34,4 @@ router.post('/', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
